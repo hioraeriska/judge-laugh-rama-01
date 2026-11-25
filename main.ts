@@ -1,17 +1,29 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 
-// One-line office joke: a painfully true IT-support observation with a
-// twist — the ask (a second monitor) is answered with bureaucracy
-// (a second ticket number) instead of help.
-const LINE =
-  "I asked IT for a second monitor. They gave me a second ticket number.";
-
-// Gate: one line, 1 to 199 characters, no newline.
-if (LINE.length < 1 || LINE.length > 199 || LINE.includes("\n")) {
-  throw new Error(
-    "line fails the gate: must be a single line under 200 characters",
-  );
+// The joke itself: an IT-support exchange where the helpdesk answers a
+// hardware request with paperwork instead of hardware. The second sentence
+// reframes the first — "second monitor" becomes "second ticket number" —
+// which is the whole punchline, so the line needs nothing else around it.
+function officeJoke(): string {
+  return "I asked IT for a second monitor. They gave me a second ticket number.";
 }
+
+// The bounty gate admits a single line of 1 to 199 characters. Anything
+// outside that range, or anything spanning more than one line, is refused
+// before it can be judged, so reject it here instead of shipping it.
+function checkLine(line: string): void {
+  const tooShort = line.length < 1;
+  const tooLong = line.length > 199;
+  const multiLine = line.includes("\n");
+  if (tooShort || tooLong || multiLine) {
+    throw new Error(
+      "line fails the gate: must be a single line under 200 characters",
+    );
+  }
+}
+
+const LINE = officeJoke();
+checkLine(LINE);
 
 mkdirSync("/output", { recursive: true });
 writeFileSync("/output/entry.txt", LINE, "utf8");
